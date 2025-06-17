@@ -3,103 +3,86 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body{
     font-family: Roboto;
-    color: #202020;
-    background: #f9f5ed;
-}
-
-.wrapper{
+    background: rgb(35, 145, 135);
     height: 100dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 40px;
+    gap: 20px;
+}
+h1{
+    font-weight: 800;
+    font-size: 28px;
+    color: white;
 }
 .container_calculator{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    padding: 30px;
-    background: #eab8b8;
-    border: solid #de9594 2px;
+    background-color: rgb(11, 43, 68);
     border-radius: 10px;
-    box-shadow: 10px 10px 24px -8px rgb(0 0 0 / 0.25);
+    border: 2px solid white;
+    overflow: hidden;
     box-shadow: 10px 10px 21px -5px rgba(0,0,0,0.36);
-    -webkit-box-shadow: 10px 10px 21px -5px rgba(0,0,0,0.36);
-    -moz-box-shadow: 10px 10px 21px -5px rgba(0,0,0,0.36);
 }
 .container_output{
-    background: #f9f5ed;
-    border-radius: 6px;
-    padding: 10px 0 10px 0;
-    border: solid #de9594 2px;
+    color: white;
+    background-color: rgb(11, 35, 55);
+    font-weight: 700;
+    padding: 10px 0;
+    border-bottom: 2px solid;
+    border-image: 
+    linear-gradient(
+      to right, 
+      white, 
+      rgba(0, 0, 0, 0)
+    ) 1 
 }
 .container_buttons{
     display: grid;
-    grid-template-columns: repeat(3, 65px);
-    grid-template-rows: repeat(3, 65px);
+    grid-template-columns: repeat(3, 70px);
+    grid-template-rows: repeat(2, 70px);
     gap: 25px;
+    padding:25px 0;
 }
-.buttons{
+button{
     border: none;
     border-radius: 4px;
     font-size: 1.2rem;
     font-weight: 700;
     cursor: pointer;
-    transition-property: background, color, border;
-    transition-duration: 0.4s;
+    background-color: inherit;
+    transition: all 0.3s ease-in-out;
 }
 .buttons-terminales{
-    background: #f9f5ed;
-    color: #de9594;
-    border-right: solid #de9594 2px;
-    border-bottom: solid #de9594 2px;
+    color: white
 }
 .button-remove, .button-start{
-    background: #de9594;
-    color: #f9f5ed;
-    border-right: solid  #f9f5ed 2px;
-    border-bottom: solid  #f9f5ed 2px;
+    color: rgb(35, 145, 135);
 }
 input{
     padding: 10px;
     border: none;
     font-size: 1.2em;
     font-weight: 700;
+    cursor: default;
     background: transparent;
-    color:  #de9594;
+    color:  white;
+    text-align: right;
 }
-.button-space{
-    background-color: #202020;
-    grid-column-end: span 3;
-    color: #f9f5ed;
-    border-radius: 4px;
-    border-right: solid  #f9f5ed 2px;
-    border-bottom: solid  #f9f5ed 2px;
-}
-.buttons:hover{
-    color: #202020;
-    border-right: solid #202020 2px;
-    border-bottom: solid #202020 2px;
-}
-.button-space:hover{
-    background: #333;
-    color: #f9f5ed;
-    border-right: solid  #f9f5ed 2px;
-    border-bottom: solid  #f9f5ed 2px;
+button:hover{
+    color: rgb(11, 43, 68);
+    background-color: white;
 }
 .state{
     font-weight: 700;
     padding: 10px 0 10px 13px;
 }
-input:focus-visible, .buttons:focus-visible{
+input:focus-visible, button:focus-visible{
     outline: none;
-}
-h1{
-    font-size: 1.5em;
-    letter-spacing: 2px;
 }
