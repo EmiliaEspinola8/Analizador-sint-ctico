@@ -1,16 +1,15 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 body{
     font-family: Roboto;
     color: #202020;
     background: #f9f5ed;
-/*     background: url(./src/background.jpg);
-    background-size: cover;
-    background-position: center; */
 }
-body, div, button, input,p,h1{
-    margin: 0;
-    padding: 0;
-}
-.wapper{
+
+.wrapper{
     height: 100dvh;
     display: flex;
     flex-direction: column;
@@ -18,7 +17,7 @@ body, div, button, input,p,h1{
     align-items: center;
     gap: 40px;
 }
-.conteiner_calculator{
+.container_calculator{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -33,13 +32,13 @@ body, div, button, input,p,h1{
     -webkit-box-shadow: 10px 10px 21px -5px rgba(0,0,0,0.36);
     -moz-box-shadow: 10px 10px 21px -5px rgba(0,0,0,0.36);
 }
-.conteiner_output{
+.container_output{
     background: #f9f5ed;
     border-radius: 6px;
     padding: 10px 0 10px 0;
     border: solid #de9594 2px;
 }
-.conteiner_buttons{
+.container_buttons{
     display: grid;
     grid-template-columns: repeat(3, 65px);
     grid-template-rows: repeat(3, 65px);

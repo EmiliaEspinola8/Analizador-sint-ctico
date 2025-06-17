@@ -7,6 +7,12 @@ document.addEventListener('click', (e)=>{
         concatenar(e.target.value);
     }
 })
+document.addEventListener("keydown", ({ key }) => {
+  const keys = new Set(["Enter", "Backspace", "0", "1", "+", "-"]);
+  if (!keys.has(key)) return;
+  concatenar(key === "Enter" ? "comenzar" : key === "Backspace" ? "eliminar" : key);
+});
+
 const concatenar = (valor) => {
     if(valor == "eliminar"){
         output.value = output.value.slice(0,-1);
