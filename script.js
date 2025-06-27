@@ -1,7 +1,7 @@
 const buttons = document.querySelectorAll(".buttons");
 const output = document.querySelector(".output");
 const estado = document.querySelector(".state");
-const regex = /^[01]+(\s*[+-]\s*[01]+)*$/;
+
 document.addEventListener('click', (e)=>{
     if(e.target.tagName === "BUTTON"){
         concatenar(e.target.value);
@@ -24,5 +24,10 @@ const concatenar = (valor) => {
 }
 
 const analizar = ()=>{
-    estado.textContent = regex.test(output.value) ? "Aceptado" : "Rechazado";
+    const resultado = validarExpresionCalculadora(output.value, output);
+    if(resultado.valida) {
+        estado.textContent = "Aceptado";
+    }else{
+        estado.textContent = "Rechazado";
+    }
 }
