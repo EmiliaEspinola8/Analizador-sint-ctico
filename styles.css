@@ -61,6 +61,11 @@ h1, h2{
     font-weight: 700;
     font-size: .8rem;
 }
+#modalResultado {
+    min-width: 500px!important;
+    max-width: max-content!important;
+}
+
 #modalResultado > div{
     display: flex;
     gap: 3px;
@@ -117,4 +122,48 @@ input:focus-visible, button:focus-visible{
 
 .error-overlay {
     transition: all 0.3s ease;
+}
+
+.nodo-wrapper {
+    text-align: center;
+    display: inline-block;
+    vertical-align: top;
+    margin: 10px;
+    min-width: 120px; 
+}
+
+.nodo-arbol {
+    display: inline-block;
+    padding: 6px 10px;
+    border: 2px solid #4CAF50;
+    border-radius: 8px;
+    background-color: #e8f5e9;
+    font-weight: bold;
+    min-width: 30px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.contenedor-hijos {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.contenedor-hijos > .nodo-wrapper {
+    flex: 1; 
+    max-width: 150px;
+    margin: 0 70px; 
+}
+
+.contenedor-hijos .nodo-wrapper {
+    width: 60px; 
+    margin: 0 20px; 
+}
+
+.nodo-wrapper .nodo-arbol {
+    width: 100%;
+    max-width: 60px;
+    margin: 0 auto;
 }

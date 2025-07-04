@@ -40,6 +40,7 @@ class Lexer {
                 while (/[01]/.test(this.texto[this.posicion])) this.posicion++;
                 tokens.push(new Token(TokenType.NUMERO, this.texto.slice(inicio, this.posicion), inicio));
             }
+
             else if (char === '+') {
                 tokens.push(new Token(TokenType.SUMA, char, this.posicion));
                 this.posicion++;
@@ -291,13 +292,13 @@ function limpiarErrorVisual(inputElement) {
 
 function validarExpresionCalculadora(expresion, inputElement) {
     const resultado = analizarExpresionBinaria(expresion);
-    if(inputElement.value.length == 0) {
+    mostrarResultado(resultado);
+    if (!resultado.exito) {
+        if(inputElement.value.length == 0) {
         modal.innerHTML = `<p style="font-size:16px">Escribe una expresion valida</p>`
         limpiarErrorVisual(inputElement);
         return
-    };
-    mostrarResultado(resultado);
-    if (!resultado.exito) {
+        };
         aplicarErrorVisual(inputElement, resultado.posicionError, resultado.longitudError);
         
         return {
@@ -318,6 +319,7 @@ function validarExpresionCalculadora(expresion, inputElement) {
     }
 }
 function mostrarResultado(resultado) {
+    const arbolContainer = document.createElement('div');
     if (resultado.exito) {
         modal.innerHTML = `
             <p style="color: green; font-weight: bold; font-size: 16px; margin-bottom: 10px">Expresión Valida</p>
@@ -328,7 +330,8 @@ function mostrarResultado(resultado) {
             </div>
         
         `
-        console.log(resultado.ast.mostrarEstructura(1))
+        modal.appendChild(arbolContainer);
+        renderizarArbol(resultado.ast, arbolContainer);
     } else {
         modal.innerHTML = `
             <p style="color: red; font-weight: bold; font-size: 16px;margin-bottom: 10px">Expresión Invalida</p>
@@ -341,4 +344,31 @@ function mostrarResultado(resultado) {
     }
 }
 
+function renderizarArbol(nodo, container) {
+    const nodoDiv = document.createElement('div');
+    nodoDiv.className = 'nodo-arbol';
+    nodoDiv.textContent = nodo instanceof NodoNumero ? nodo.valor : nodo.operador;
 
+    const contenedorHijos = document.createElement('div');
+    contenedorHijos.className = 'contenedor-hijos';
+
+    if (nodo instanceof NodoOperacion) {
+        const izquierdo = document.createElement('div');
+        renderizarArbol(nodo.izquierdo, izquierdo);
+
+        const derecho = document.createElement('div');
+        renderizarArbol(nodo.derecho, derecho);
+
+        contenedorHijos.appendChild(izquierdo);
+        contenedorHijos.appendChild(derecho);
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'nodo-wrapper';
+    wrapper.appendChild(nodoDiv);
+    if (contenedorHijos.children.length > 0) {
+        wrapper.appendChild(contenedorHijos);
+    }
+
+    container.appendChild(wrapper);
+}
