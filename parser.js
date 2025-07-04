@@ -351,8 +351,10 @@ function renderizarArbol(nodo, container) {
 
     const contenedorHijos = document.createElement('div');
     contenedorHijos.className = 'contenedor-hijos';
-
+    const wrapper = document.createElement('div');
+    wrapper.className = 'nodo-wrapper';
     if (nodo instanceof NodoOperacion) {
+        wrapper.classList.add('nodo-con-hijos');
         const izquierdo = document.createElement('div');
         renderizarArbol(nodo.izquierdo, izquierdo);
 
@@ -362,9 +364,6 @@ function renderizarArbol(nodo, container) {
         contenedorHijos.appendChild(izquierdo);
         contenedorHijos.appendChild(derecho);
     }
-
-    const wrapper = document.createElement('div');
-    wrapper.className = 'nodo-wrapper';
     wrapper.appendChild(nodoDiv);
     if (contenedorHijos.children.length > 0) {
         wrapper.appendChild(contenedorHijos);

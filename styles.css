@@ -63,7 +63,6 @@ h1, h2{
 }
 #modalResultado {
     min-width: 500px!important;
-    max-width: max-content!important;
 }
 
 #modalResultado > div{
@@ -71,6 +70,9 @@ h1, h2{
     gap: 3px;
     flex-direction: column;
     margin-bottom: 10px;
+}
+.modal{
+    max-width: inherit!important;
 }
 .container_buttons{
     display: grid;
@@ -130,6 +132,7 @@ input:focus-visible, button:focus-visible{
     vertical-align: top;
     margin: 10px;
     min-width: 120px; 
+    position: relative;
 }
 
 .nodo-arbol {
@@ -141,14 +144,16 @@ input:focus-visible, button:focus-visible{
     font-weight: bold;
     min-width: 30px;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 2;
 }
-
 .contenedor-hijos {
     display: flex;
     justify-content: center;
     align-items: flex-start;
     margin-top: 40px;
     width: 100%;
+    position: relative;
 }
 
 .contenedor-hijos > .nodo-wrapper {
@@ -167,3 +172,39 @@ input:focus-visible, button:focus-visible{
     max-width: 60px;
     margin: 0 auto;
 }
+
+.nodo-con-hijos .nodo-arbol::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background-color: #4CAF50;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+.contenedor-hijos::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 163px !important;
+    height: 2px;
+    background-color: #4CAF50;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.contenedor-hijos .nodo-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background-color: #4CAF50;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
