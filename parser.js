@@ -1,3 +1,4 @@
+const modal = document.getElementById('modalResultado');
 const TokenType = {
     NUMERO: 'NUMERO',
     SUMA: 'SUMA',
@@ -34,14 +35,10 @@ class Lexer {
                 continue;
             }
             
-            if (char === '0' || char === '1') {
+            if (/[01]/.test(char)) {
                 const inicio = this.posicion;
-                while (this.posicion < this.texto.length && 
-                       (this.texto[this.posicion] === '0' || this.texto[this.posicion] === '1')) {
-                    this.posicion++;
-                }
-                const numero = this.texto.substring(inicio, this.posicion);
-                tokens.push(new Token(TokenType.NUMERO, numero, inicio));
+                while (/[01]/.test(this.texto[this.posicion])) this.posicion++;
+                tokens.push(new Token(TokenType.NUMERO, this.texto.slice(inicio, this.posicion), inicio));
             }
             else if (char === '+') {
                 tokens.push(new Token(TokenType.SUMA, char, this.posicion));
@@ -50,9 +47,6 @@ class Lexer {
             else if (char === '-') {
                 tokens.push(new Token(TokenType.RESTA, char, this.posicion));
                 this.posicion++;
-            }
-            else {
-                throw new SyntaxError(`ERROR LÉXICO: Carácter no válido '${char}' en posición ${this.posicion}. Solo se permiten dígitos binarios (0,1), operadores (+,-).`);
             }
         }
         
@@ -80,7 +74,7 @@ class NodoNumero extends NodoAST {
     
     mostrarEstructura(nivel = 0) {
         const indentacion = '  '.repeat(nivel);
-        return `${indentacion}├─ Numero: ${this.valor} (decimal: ${parseInt(this.valor, 2)})`;
+        return `${indentacion}├─ <numero>: ${this.valor}`;
     }
 }
 
@@ -98,10 +92,10 @@ class NodoOperacion extends NodoAST {
     
     mostrarEstructura(nivel = 0) {
         const indentacion = '  '.repeat(nivel);
-        let resultado = `${indentacion}├─ Operacion: ${this.operador}\n`;
-        resultado += `${indentacion}│  ├─ Izquierdo:\n`;
+        let resultado = `${indentacion}├─ <operador> ${this.operador}\n`;
+        resultado += `${indentacion}  ├─ Izquierdo:\n`;
         resultado += `${this.izquierdo.mostrarEstructura(nivel + 2)}\n`;
-        resultado += `${indentacion}│  └─ Derecho:\n`;
+        resultado += `${indentacion}  └─ Derecho:\n`;
         resultado += `${this.derecho.mostrarEstructura(nivel + 2)}`;
         return resultado;
     }
@@ -125,7 +119,7 @@ class Parser {
         const ast = this.expresion();
         
         if (this.tokenActual && this.tokenActual.tipo !== TokenType.EOF) {
-            throw new SyntaxError(`ERROR SINTÁCTICO: Token inesperado '${this.tokenActual.valor}' en posición ${this.tokenActual.posicion}. Se esperaba fin de expresión.`);
+            throw new SyntaxError(`ERROR SINTÁCTICO: Simbolo inesperado '${this.tokenActual.valor}' en posición ${this.tokenActual.posicion}. Se esperaba fin de expresión.`);
         }
         
         return ast;
@@ -148,9 +142,8 @@ class Parser {
     
     termino() {
         if (!this.tokenActual) {
-            throw new SyntaxError(`ERROR SINTÁCTICO: Se esperaba un número o '(' pero se encontró fin de expresión.`);
+            throw new SyntaxError(`ERROR SINTÁCTICO: Se esperaba un número o pero se encontró fin de expresión.`);
         }
-        
         if (this.tokenActual.tipo === TokenType.NUMERO) {
             const valor = this.tokenActual.valor;
             const posicion = this.tokenActual.posicion;
@@ -163,10 +156,10 @@ class Parser {
             return new NodoNumero(valor);
         }
         else if (this.tokenActual.tipo === TokenType.SUMA || this.tokenActual.tipo === TokenType.RESTA) {
-            throw new SyntaxError(`ERROR SINTÁCTICO: Operador '${this.tokenActual.valor}' en posición ${this.tokenActual.posicion} sin operando izquierdo. Se esperaba un número o '('.`);
+            throw new SyntaxError(`ERROR SINTÁCTICO: Operador en posición ${this.tokenActual.posicion} sin operando izquierdo. Se esperaba un número.`);
         }
         else {
-            throw new SyntaxError(`ERROR SINTÁCTICO: Token inesperado '${this.tokenActual.valor}' en posición ${this.tokenActual.posicion}. Se esperaba un número binario o '('.`);
+            throw new SyntaxError(`ERROR SINTÁCTICO: Simbolo inesperado en posición ${this.tokenActual.posicion}. Se esperaba un número binario.`);
         }
     }
 }
@@ -188,9 +181,6 @@ class EvaluadorBinario {
                 resultado = izqDecimal + derDecimal;
             } else if (nodo.operador === '-') {
                 resultado = izqDecimal - derDecimal;
-                if (resultado < 0) {
-                    throw new RangeError(`ERROR SEMÁNTICO: El resultado de ${izq} - ${der} es negativo (${resultado}). Este analizador solo maneja números binarios positivos.`);
-                }
             }
             
             return resultado.toString(2); 
@@ -225,11 +215,7 @@ function analizarExpresionBinaria(expresion) {
         const matchPosicion = error.message.match(/posición (\d+)/);
         if (matchPosicion) {
             posicionError = parseInt(matchPosicion[1]);
-            
-            if (error.message.includes('ERROR LÉXICO')) {
-                longitudError = 1;
-            } 
-            else if (error.message.includes('Número binario')) {
+            if (error.message.includes('Número binario')) {
                 let i = posicionError;
                 while (i < expresion.length && (expresion[i] === '0' || expresion[i] === '1')) {
                     i++;
@@ -275,12 +261,9 @@ function aplicarErrorVisual(inputElement, posicionError, longitudError = 1) {
     const anchoAntes = ctx.measureText(textoAntes).width;
     const anchoError = ctx.measureText(textoError).width || fontSize * 0.6; 
     
-    const paddingLeft = parseFloat(inputStyles.paddingLeft) || 0;
-    const paddingTop = parseFloat(inputStyles.paddingTop) || 0;
-    
-    errorOverlay.style.left = (inputRect.left + paddingLeft + anchoAntes -10) + 'px';
+    errorOverlay.style.left = (inputRect.left + anchoAntes + (anchoAntes === 0 ? 6 : -2)) + 'px';
     errorOverlay.style.top = (inputRect.bottom -10) + 'px';
-    errorOverlay.style.width = Math.max(anchoError, fontSize * 0.8) + 'px';
+    errorOverlay.style.width = Math.max(anchoError, fontSize * 0.9) + 'px';
     errorOverlay.style.height = '3px';
     errorOverlay.style.backgroundColor = '#ff4444';
     errorOverlay.style.borderRadius = '1px';
@@ -308,6 +291,11 @@ function limpiarErrorVisual(inputElement) {
 
 function validarExpresionCalculadora(expresion, inputElement) {
     const resultado = analizarExpresionBinaria(expresion);
+    if(inputElement.value.length == 0) {
+        modal.innerHTML = `<p style="font-size:16px">Escribe una expresion valida</p>`
+        limpiarErrorVisual(inputElement);
+        return
+    };
     mostrarResultado(resultado);
     if (!resultado.exito) {
         aplicarErrorVisual(inputElement, resultado.posicionError, resultado.longitudError);
@@ -329,87 +317,28 @@ function validarExpresionCalculadora(expresion, inputElement) {
         };
     }
 }
-
 function mostrarResultado(resultado) {
-    console.log(`\n${'='.repeat(60)}`);
-    console.log(`EXPRESIÓN: ${resultado.expresionOriginal}`);
-    console.log(`${'='.repeat(60)}`);
-
     if (resultado.exito) {
-        console.log('✅ ANÁLISIS EXITOSO');
-        console.log('\n📝 TOKENS GENERADOS:');
-        resultado.tokens.slice(0, -1).forEach((token, index) => {
-            console.log(`  ${index + 1}. ${token.tipo}: "${token.valor}" (pos: ${token.posicion})`);
-        });
-
-        console.log('\n🌳 ESTRUCTURA JERÁRQUICA (AST):');
-        console.log('└─ Expresión Principal');
-        const estructuraAST = resultado.ast.mostrarEstructura(1);
-        console.log(estructuraAST);
-
-        console.log('\n🎯 RESULTADO:');
-        console.log(`  Binario: ${resultado.resultado}`);
-        console.log(`  Decimal: ${parseInt(resultado.resultado, 2)}`);
-
-        console.log('\n🔍 VERIFICACIÓN:');
-        try {
-            const expresionDecimal = resultado.expresionOriginal.replace(/[01]+/g, (match) => {
-                return parseInt(match, 2).toString();
-            });
-            const resultadoDecimal = eval(expresionDecimal);
-            console.log(`  ${resultado.expresionOriginal} (binario)`);
-            console.log(`  = ${expresionDecimal} (decimal)`);
-            console.log(`  = ${resultadoDecimal}`);
-            console.log(`  = ${resultadoDecimal.toString(2)} (binario)`);
-        } catch (e) {
-            console.log('  No se pudo realizar la verificación automática');
-        }
+        modal.innerHTML = `
+            <p style="color: green; font-weight: bold; font-size: 16px; margin-bottom: 10px">Expresión Valida</p>
+            <div>
+                <p>Expresión Original: ${resultado.expresionOriginal}</p>
+                <p>Expresión Binaria: ${resultado.resultado}</p>
+                <p>Expresión Decimal: ${parseInt(resultado.resultado, 2)}</p>
+            </div>
+        
+        `
+        console.log(resultado.ast.mostrarEstructura(1))
     } else {
-        console.log('❌ ERROR EN EL ANÁLISIS');
+        modal.innerHTML = `
+            <p style="color: red; font-weight: bold; font-size: 16px;margin-bottom: 10px">Expresión Invalida</p>
+            <p style="margin-bottom: 10px">${resultado.error}</p>
 
-        if (resultado.error) {
-            console.log(`\n💥 ${resultado.error}`);
-
-            const match = resultado.error.match(/posición (\d+)/);
-            if (match) {
-                const posicion = parseInt(match[1]);
-                console.log('\n📍 UBICACIÓN DEL ERROR:');
-                console.log(`  "${resultado.expresionOriginal}"`);
-                console.log(`   ${' '.repeat(posicion)}^`);
-                console.log(`   ${' '.repeat(posicion)}Error aquí`);
-            }
-
-            console.log('\n💡 SUGERENCIAS:');
-            if (resultado.error.includes('Carácter no válido')) {
-                console.log('  - Solo use dígitos binarios (0, 1)');
-                console.log('  - Operadores permitidos: +, -, (, )');
-            } else if (resultado.error.includes('Se esperaba')) {
-                console.log('  - Asegúrese de que cada operador tenga operandos');
-            } else if (resultado.error.includes('negativo')) {
-                console.log('  - Este analizador no maneja números negativos');
-                console.log('  - Asegúrese de que el resultado sea positivo');
-            }
-        } else {
-            console.log('\n💥 Error desconocido');
-        }
+            <p style="font-weight: bold; font-size: 16px; margin-bottom: 5px">Sugerencias</p>
+            ${resultado.error.includes('Se esperaba') ? '<p>Asegúrese de que cada operador tenga operandos</p>' : ''}
+            ${resultado.error.includes('Carácter no válido') ? ' <p>Solo use dígitos binarios (0, 1)<p>' : ''}
+        `
     }
 }
 
 
-const errorCSS = `
-@keyframes errorPulse {
-    0% { opacity: 0; transform: scaleX(0); }
-    50% { opacity: 1; transform: scaleX(1.1); }
-    100% { opacity: 1; transform: scaleX(1); }
-}
-
-.error-overlay {
-    transition: all 0.3s ease;
-}
-`;
-
-if (typeof document !== 'undefined') {
-    const style = document.createElement('style');
-    style.textContent = errorCSS;
-    document.head.appendChild(style);
-}

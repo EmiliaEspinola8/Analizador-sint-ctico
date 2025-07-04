@@ -15,8 +15,12 @@ document.addEventListener("keydown", ({ key }) => {
 const concatenar = (valor) => {
     if(valor == "eliminar"){
         output.value = output.value.slice(0,-1);
+        if(output.value.length == 0){
+            limpiarErrorVisual(output);
+        }
     }else if(valor == "comenzar"){
         output.value = "";
+        validarExpresionCalculadora(output.value, output);
     }else{
         output.value += valor;
     }
